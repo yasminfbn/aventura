@@ -1,0 +1,527 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#080611">
+
+    <title>Fase 1-1 | Yaszuc Adventure</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/pixelarmy" rel="stylesheet">
+</head>
+
+<body class="corpo-jogo">
+
+    <main class="container-jogo" id="container-jogo">
+
+        <!-- PAINEL SUPERIOR -->
+        <header class="painel-informacoes">
+
+            <div class="status-jogo">
+
+                <div class="informacao-jogo">
+                    <span class="icone-vida">♥</span>
+                    <span id="vidas">3</span>
+                </div>
+
+                <div class="separador-status"></div>
+
+                <div class="informacao-jogo">
+                    <svg class="icone-cenoura" viewBox="0 0 40 40" aria-label="Cenoura">
+                        <path d="M18 13 C12 5 15 2 20 8 C21 1 28 2 25 12"
+                              fill="#55B96B"/>
+                        <path d="M12 12 L31 17 L17 37 Q13 39 13 33 Z"
+                              fill="#F28B35"/>
+                        <path d="M15 19 L23 21 M14 25 L20 27"
+                              stroke="#D96B20" stroke-width="2"
+                              stroke-linecap="round"/>
+                    </svg>
+
+                    <span id="cenouras">0</span>
+                </div>
+
+                <div class="separador-status"></div>
+
+                <div class="fase-atual">
+                    FASE 1-1
+                </div>
+
+            </div>
+
+            <div class="acoes-jogo">
+
+                <button type="button"
+                        id="botao-instrucoes"
+                        class="botao-redondo"
+                        aria-label="Instruções"
+                        title="Instruções">
+                    ⓘ
+                </button>
+
+                <button type="button"
+                        id="botao-menu"
+                        class="botao-redondo"
+                        aria-label="Abrir menu"
+                        title="Menu">
+                    ☰
+                </button>
+
+                <button type="button"
+                        id="botao-tela-cheia"
+                        class="botao-redondo"
+                        aria-label="Tela cheia"
+                        title="Tela cheia">
+                    ⛶
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ÁREA DO JOGO -->
+        <section class="area-jogo">
+
+            <canvas
+                id="tela-jogo"
+                width="960"
+                height="540"
+                aria-label="Jogo Yaszuc Adventure">
+
+                Seu navegador não suporta Canvas.
+
+            </canvas>
+
+        </section>
+
+
+        <!-- CONTROLES PARA COMPUTADOR -->
+        <footer class="instrucoes-desktop">
+
+            <span>← → MOVER</span>
+            <span>ESPAÇO PULAR</span>
+            <span>X ATACAR</span>
+            <span>R REINICIAR</span>
+
+        </footer>
+
+
+        <!-- CONTROLES PARA CELULAR -->
+        <section class="controles-mobile">
+
+            <div class="grupo-movimento">
+
+                <button type="button"
+                        class="botao-controle"
+                        data-key="ArrowLeft"
+                        aria-label="Mover para esquerda">
+                    ◀
+                </button>
+
+                <button type="button"
+                        class="botao-controle"
+                        data-key="ArrowRight"
+                        aria-label="Mover para direita">
+                    ▶
+                </button>
+
+            </div>
+
+            <div class="grupo-acoes">
+
+                <button type="button"
+                        class="botao-controle botao-pulo"
+                        data-key="Space"
+                        aria-label="Pular">
+                    ↑
+                </button>
+
+                <button type="button"
+                        class="botao-controle botao-ataque"
+                        data-key="KeyX"
+                        aria-label="Atacar">
+                    ✦
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- MODAL DE INSTRUÇÕES -->
+        <div class="modal-instrucoes"
+             id="modal-instrucoes"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="titulo-instrucoes"
+             hidden>
+
+            <div class="conteudo-instrucoes">
+
+                <button type="button"
+                        id="fechar-instrucoes"
+                        class="fechar-modal"
+                        aria-label="Fechar">
+                    ✕
+                </button>
+
+                <h2 id="titulo-instrucoes">COMO JOGAR?</h2>
+
+                <p>Explore a floresta e colete cenouras.</p>
+                <p>Desvie dos inimigos ou derrote-os.</p>
+                <p>Pule de galho em galho.</p>
+                <p>Encontre a casa do porquinho para concluir a fase.</p>
+
+                <hr>
+
+                <h3>CONTROLES</h3>
+
+                <p>← → ou A/D: movimentar</p>
+                <p>ESPAÇO ou ↑: pular</p>
+                <p>X: atacar</p>
+                <p>R: reiniciar</p>
+
+                <button type="button"
+                        id="entendi-instrucoes"
+                        class="botao-entendi">
+                    ENTENDI!
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- MENU DO JOGO -->
+        <div class="modal-menu"
+             id="modal-menu"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="titulo-menu"
+             hidden>
+
+            <div class="conteudo-menu">
+
+                <span class="menu-subtitulo">YASZUC ADVENTURE</span>
+
+                <h2 id="titulo-menu">PAUSAR JOGO</h2>
+
+                <p>O que deseja fazer?</p>
+
+                <button type="button"
+                        id="botao-continuar"
+                        class="opcao-menu opcao-principal">
+                    CONTINUAR JOGANDO
+                </button>
+
+                <button type="button"
+                        id="botao-recomecar"
+                        class="opcao-menu">
+                    ↻ RECOMEÇAR FASE
+                </button>
+
+                <a href="{{ url_for('inicio') }}"
+                   class="opcao-menu opcao-voltar">
+                    ← VOLTAR AO MENU INICIAL
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+    <!-- JANELA DE GAME OVER -->
+<div class="modal-game-over" id="modal-game-over" hidden>
+
+    <div class="conteudo-game-over">
+
+        <h2>GAMER OVER</h2>
+
+        <div class="botoes-game-over">
+
+            <a href="{{ url_for('inicio') }}"
+               class="botao-game-over botao-voltar-game">
+                VOLTAR AO MENU
+            </a>
+
+            <button type="button"
+                    id="botao-tentar-novamente"
+                    class="botao-game-over botao-tentar">
+                TENTAR NOVAMENTE
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal-vitoria" id="modal-vitoria" hidden>
+    <div class="conteudo-vitoria">
+
+        <div class="trofeu-vitoria">🏆</div>
+
+        <h2>CHEGOU EM CASA!</h2>
+
+        <p class="mensagem-vitoria">
+            Seu porquinho encontrou seu lar!
+        </p>
+
+        <div class="estatisticas-vitoria">
+
+            <div class="estatistica-vitoria">
+                <span>🥕</span>
+                <div>
+                    <strong id="total-cenouras-vitoria">0</strong>
+                    <small>Cenouras coletadas</small>
+                </div>
+            </div>
+
+            <div class="estatistica-vitoria">
+                <span>🐱</span>
+                <div>
+                    <strong id="total-inimigos-vitoria">0</strong>
+                    <small>Inimigos derrotados</small>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="texto-reiniciar">
+            APERTE R PARA JOGAR NOVAMENTE
+        </p>
+
+    </div>
+</div>
+
+
+
+    <!-- JAVASCRIPT DO JOGO -->
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+
+
+    <!-- INTERFACE E CONTROLES -->
+    <script>
+
+        const modalInstrucoes = document.getElementById("modal-instrucoes");
+        const modalMenu = document.getElementById("modal-menu");
+
+        const botaoInstrucoes = document.getElementById("botao-instrucoes");
+        const botaoFechar = document.getElementById("fechar-instrucoes");
+        const botaoEntendi = document.getElementById("entendi-instrucoes");
+
+        const botaoMenu = document.getElementById("botao-menu");
+        const botaoContinuar = document.getElementById("botao-continuar");
+        const botaoRecomecar = document.getElementById("botao-recomecar");
+
+        const containerJogo = document.getElementById("container-jogo");
+        const botaoTelaCheia = document.getElementById("botao-tela-cheia");
+
+
+        // INSTRUÇÕES
+        botaoInstrucoes.addEventListener("click", () => {
+            modalInstrucoes.hidden = false;
+            botaoFechar.focus();
+        });
+
+        function fecharInstrucoes() {
+            modalInstrucoes.hidden = true;
+            botaoInstrucoes.focus();
+        }
+
+        botaoFechar.addEventListener("click", fecharInstrucoes);
+        botaoEntendi.addEventListener("click", fecharInstrucoes);
+
+
+        // MENU DO JOGO
+        botaoMenu.addEventListener("click", () => {
+            modalMenu.hidden = false;
+            botaoContinuar.focus();
+        });
+
+        botaoContinuar.addEventListener("click", () => {
+            modalMenu.hidden = true;
+        });
+
+
+        // RECOMEÇAR FASE
+        botaoRecomecar.addEventListener("click", () => {
+
+            modalMenu.hidden = true;
+
+            window.dispatchEvent(new KeyboardEvent("keydown", {
+                key: "r",
+                code: "KeyR",
+                bubbles: true
+            }));
+
+        });
+
+
+        // FECHAR MODAIS CLICANDO FORA
+        modalInstrucoes.addEventListener("click", (evento) => {
+            if (evento.target === modalInstrucoes) {
+                fecharInstrucoes();
+            }
+        });
+
+        modalMenu.addEventListener("click", (evento) => {
+            if (evento.target === modalMenu) {
+                modalMenu.hidden = true;
+            }
+        });
+
+
+        // FECHAR COM ESC
+        document.addEventListener("keydown", (evento) => {
+
+            if (evento.key === "Escape") {
+
+                if (!modalInstrucoes.hidden) {
+                    fecharInstrucoes();
+                }
+
+                if (!modalMenu.hidden) {
+                    modalMenu.hidden = true;
+                }
+
+            }
+
+        });
+
+
+        // TELA CHEIA
+        botaoTelaCheia.addEventListener("click", async () => {
+
+            try {
+
+                if (!document.fullscreenElement) {
+                    await containerJogo.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+
+            } catch (erro) {
+                console.error("Erro ao ativar tela cheia:", erro);
+            }
+
+        });
+
+
+        document.addEventListener("fullscreenchange", () => {
+
+            botaoTelaCheia.textContent = document.fullscreenElement
+                ? "⤢"
+                : "⛶";
+
+        });
+
+
+        // CONTROLES DE TOQUE
+        const botoesControle = document.querySelectorAll(".botao-controle");
+        const teclasPressionadas = new Set();
+
+        function obterNomeTecla(codigo) {
+
+            const teclas = {
+                ArrowLeft: "ArrowLeft",
+                ArrowRight: "ArrowRight",
+                Space: " ",
+                KeyX: "x"
+            };
+
+            return teclas[codigo];
+
+        }
+
+
+        function pressionarTecla(botao, evento) {
+
+            evento.preventDefault();
+
+            const codigo = botao.dataset.key;
+
+            if (teclasPressionadas.has(codigo)) return;
+
+            teclasPressionadas.add(codigo);
+            botao.classList.add("pressionado");
+
+            window.dispatchEvent(new KeyboardEvent("keydown", {
+                key: obterNomeTecla(codigo),
+                code: codigo,
+                bubbles: true
+            }));
+
+        }
+
+
+        function soltarTecla(botao, evento) {
+
+            if (evento) evento.preventDefault();
+
+            const codigo = botao.dataset.key;
+
+            if (!teclasPressionadas.has(codigo)) return;
+
+            teclasPressionadas.delete(codigo);
+            botao.classList.remove("pressionado");
+
+            window.dispatchEvent(new KeyboardEvent("keyup", {
+                key: obterNomeTecla(codigo),
+                code: codigo,
+                bubbles: true
+            }));
+
+        }
+
+
+        botoesControle.forEach((botao) => {
+
+            botao.addEventListener("pointerdown", (evento) => {
+                pressionarTecla(botao, evento);
+            });
+
+            botao.addEventListener("pointerup", (evento) => {
+                soltarTecla(botao, evento);
+            });
+
+            botao.addEventListener("pointercancel", (evento) => {
+                soltarTecla(botao, evento);
+            });
+
+            botao.addEventListener("lostpointercapture", (evento) => {
+                soltarTecla(botao, evento);
+            });
+
+            botao.addEventListener("contextmenu", (evento) => {
+                evento.preventDefault();
+            });
+
+        });
+
+
+        // LIBERAR BOTÕES QUANDO A PÁGINA PERDER FOCO
+        window.addEventListener("blur", () => {
+
+            botoesControle.forEach((botao) => {
+                soltarTecla(botao);
+            });
+
+        });
+
+
+        document.addEventListener("contextmenu", (evento) => {
+            evento.preventDefault();
+        });
+
+    </script>
+
+</body>
+</html>

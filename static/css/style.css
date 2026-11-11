@@ -1,0 +1,750 @@
+
+/* =================================
+   JOGO EM TELA CHEIA
+================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.corpo-jogo {
+    font-family: 'Inter', sans-serif;
+    background: #080611;
+}
+
+.container-jogo {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+}
+
+/* =================================
+   ÁREA DO CANVAS
+================================= */
+
+.area-jogo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#tela-jogo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    object-fit: fill;
+}
+
+/* =================================
+   PAINEL SUPERIOR
+================================= */
+
+.painel-informacoes {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    right: 24px;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    pointer-events: none;
+}
+
+.status-jogo,
+.acoes-jogo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.status-jogo {
+    padding: 12px 22px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    background: rgba(12, 8, 25, 0.82);
+    backdrop-filter: blur(14px);
+}
+
+.informacao-jogo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.icone-vida {
+    color: #FF5577;
+    font-size: 27px;
+    line-height: 1;
+}
+
+.icone-cenoura {
+    width: 29px;
+    height: 29px;
+}
+
+.separador-status {
+    width: 1px;
+    height: 25px;
+    background: rgba(255,255,255,0.18);
+}
+
+.fase-atual {
+    color: #C4B5FD;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+/* =================================
+   BOTÕES REDONDOS
+================================= */
+
+.acoes-jogo {
+    pointer-events: auto;
+}
+
+.botao-redondo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 46px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+
+    background: rgba(12, 8, 25, 0.85);
+    color: #ffffff;
+
+    font-size: 22px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+    backdrop-filter: blur(12px);
+}
+
+.botao-redondo:hover {
+    background: #8B5CF6;
+    transform: translateY(-2px);
+}
+
+/* =================================
+   CONTROLES INFERIORES
+================================= */
+
+.instrucoes-desktop {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+
+    display: flex;
+    gap: 22px;
+
+    padding: 12px 20px;
+    border-radius: 12px;
+
+    background: rgba(12, 8, 25, 0.75);
+    color: rgba(255,255,255,0.8);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+
+    pointer-events: none;
+}
+
+.controles-mobile {
+    position: absolute;
+    bottom: 25px;
+    left: 20px;
+    right: 20px;
+    z-index: 8;
+
+    display: none;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    pointer-events: none;
+}
+
+.grupo-movimento,
+.grupo-acoes {
+    display: flex;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.botao-controle {
+    width: 58px;
+    height: 58px;
+
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 17px;
+
+    background: rgba(20, 14, 36, 0.8);
+    color: white;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    backdrop-filter: blur(10px);
+    touch-action: none;
+}
+
+.botao-controle.pressionado {
+    background: #8B5CF6;
+    transform: scale(0.94);
+}
+
+.botao-pulo {
+    background: rgba(139, 92, 246, 0.85);
+}
+
+.botao-ataque {
+    background: rgba(219, 70, 120, 0.85);
+}
+
+/* =================================
+   MODAIS
+================================= */
+
+.modal-instrucoes,
+.modal-menu {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    background: rgba(5, 3, 12, 0.78);
+    backdrop-filter: blur(8px);
+}
+
+.modal-instrucoes[hidden],
+.modal-menu[hidden] {
+    display: none;
+}
+
+.conteudo-instrucoes,
+.conteudo-menu {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+
+    padding: 35px;
+
+    border: 1px solid rgba(196,181,253,0.2);
+    border-radius: 22px;
+
+    background: #140E24;
+    color: #ffffff;
+
+    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+}
+
+.conteudo-instrucoes h2,
+.conteudo-menu h2 {
+    margin: 0 0 22px;
+    color: #C4B5FD;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.conteudo-instrucoes p,
+.conteudo-menu p {
+    color: #D5D0E2;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.conteudo-instrucoes hr {
+    margin: 22px 0;
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.conteudo-instrucoes h3 {
+    font-size: 13px;
+    color: #A78BFA;
+}
+
+.fechar-modal {
+    position: absolute;
+    top: 15px;
+    right: 17px;
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.botao-entendi {
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #8B5CF6;
+    color: white;
+
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* =================================
+   MENU DE PAUSA
+================================= */
+
+.menu-subtitulo {
+    display: block;
+    margin-bottom: 12px;
+
+    color: #A78BFA;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.conteudo-menu {
+    text-align: center;
+}
+
+.opcao-menu {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 15px;
+
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 11px;
+
+    background: rgba(255,255,255,0.05);
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.opcao-menu:hover {
+    background: rgba(139,92,246,0.2);
+    border-color: #8B5CF6;
+}
+
+.opcao-principal {
+    background: #8B5CF6;
+    border-color: #8B5CF6;
+}
+
+.opcao-principal:hover {
+    background: #7442DF;
+}
+
+.opcao-voltar {
+    color: #C4B5FD;
+}
+
+/* =================================
+   TELA CHEIA
+================================= */
+
+.container-jogo:fullscreen {
+    width: 100%;
+    height: 100%;
+    background: #080611;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 700px) {
+
+    .painel-informacoes {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+    }
+
+    .status-jogo {
+        gap: 10px;
+        padding: 9px 12px;
+    }
+
+    .informacao-jogo {
+        gap: 6px;
+        font-size: 16px;
+    }
+
+    .icone-vida {
+        font-size: 22px;
+    }
+
+    .icone-cenoura {
+        width: 23px;
+        height: 23px;
+    }
+
+    .fase-atual {
+        font-size: 10px;
+    }
+
+    .acoes-jogo {
+        gap: 7px;
+    }
+
+    .botao-redondo {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+
+    .instrucoes-desktop {
+        display: none;
+    }
+
+    .controles-mobile {
+        display: flex;
+    }
+
+    .conteudo-instrucoes,
+    .conteudo-menu {
+        padding: 28px 22px;
+    }
+
+}
+
+@media (max-width: 380px) {
+
+    .status-jogo {
+        gap: 7px;
+        padding: 8px;
+    }
+
+    .informacao-jogo {
+        font-size: 14px;
+    }
+
+    .fase-atual {
+        font-size: 9px;
+    }
+
+    .acoes-jogo {
+        gap: 5px;
+    }
+
+    .botao-redondo {
+        width: 34px;
+        height: 34px;
+    }
+
+}
+/* =================================
+   JANELA GAME OVER
+================================= */
+
+.modal-game-over {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    background: rgba(8, 6, 17, 0.88);
+    backdrop-filter: blur(8px);
+}
+
+.modal-game-over[hidden] {
+    display: none;
+}
+
+.conteudo-game-over {
+    width: 100%;
+    max-width: 430px;
+
+    padding: 45px 30px;
+
+    text-align: center;
+
+    background: #140E24;
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    border-radius: 20px;
+
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+}
+
+.conteudo-game-over h2 {
+    margin: 0 0 35px;
+
+    font-family: 'PixelArmy', sans-serif;
+    font-size: 36px;
+    font-weight: normal;
+
+    color: #C4B5FD;
+    letter-spacing: 2px;
+}
+
+.botoes-game-over {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.botao-game-over {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 50px;
+    padding: 14px;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-voltar-game {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.botao-tentar {
+    color: #ffffff;
+    background: #8B5CF6;
+}
+
+.botao-game-over:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+@media (max-width: 480px) {
+
+    .conteudo-game-over {
+        padding: 35px 22px;
+    }
+
+    .conteudo-game-over h2 {
+        font-size: 27px;
+    }
+
+}
+
+.modal-vitoria {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(8, 6, 17, 0.88);
+}
+
+.modal-vitoria[hidden] {
+    display: none;
+}
+
+.conteudo-vitoria {
+    width: 100%;
+    max-width: 480px;
+    padding: 35px 30px;
+    text-align: center;
+    background: #140E24;
+    border: 2px solid #8B5CF6;
+    border-radius: 22px;
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.25);
+    animation: aparecer-vitoria 0.5s ease;
+}
+
+.trofeu-vitoria {
+    font-size: 65px;
+    margin-bottom: 12px;
+    animation: trofeu-flutuar 2s ease-in-out infinite;
+}
+
+.conteudo-vitoria h2 {
+    margin: 0;
+    color: #C4B5FD;
+    font-family: 'PixelArmy', sans-serif;
+    font-size: clamp(22px, 5vw, 32px);
+    line-height: 1.5;
+    text-shadow: 0 0 15px rgba(167, 139, 250, 0.6);
+}
+
+.mensagem-vitoria {
+    color: #d8d0e9;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    margin: 15px 0 25px;
+}
+
+.estatisticas-vitoria {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+.estatistica-vitoria {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 10px;
+    background: #211735;
+    border: 1px solid #49336b;
+    border-radius: 14px;
+}
+
+.estatistica-vitoria > span {
+    font-size: 27px;
+}
+
+.estatistica-vitoria div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.estatistica-vitoria strong {
+    color: #C4B5FD;
+    font-family: 'Inter', sans-serif;
+    font-size: 25px;
+}
+
+.estatistica-vitoria small {
+    color: #c5bdd4;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+}
+
+.texto-reiniciar {
+    margin: 0;
+    color: #A78BFA;
+    font-family: 'PixelArmy', sans-serif;
+    font-size: 12px;
+    line-height: 1.8;
+    animation: piscar-reiniciar 1.2s ease-in-out infinite;
+}
+
+@keyframes aparecer-vitoria {
+    from {
+        opacity: 0;
+        transform: scale(0.85) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes trofeu-flutuar {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-9px);
+    }
+}
+
+@keyframes piscar-reiniciar {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.96);
+    }
+}
+
+@media (max-width: 480px) {
+    .conteudo-vitoria {
+        padding: 28px 18px;
+    }
+
+    .estatisticas-vitoria {
+        gap: 8px;
+    }
+
+    .estatistica-vitoria {
+        flex-direction: column;
+        padding: 12px 5px;
+    }
+
+    .estatistica-vitoria small {
+        font-size: 9px;
+    }
+
+    .texto-reiniciar {
+        font-size: 10px;
+    }
+}
